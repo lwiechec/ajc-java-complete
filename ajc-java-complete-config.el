@@ -19,10 +19,11 @@
       (cond
        ((equal templete-type  'method)
         ;;yas0.8  yas/expand-snippet renamed to yas-expand-snippet
-        (yas-expand-snippet (ajc-method-to-yasnippet-templete yasnippet-templete) )
+	;; I'm still using old version (0.7) so changing back
+        (yas/expand-snippet (ajc-method-to-yasnippet-templete yasnippet-templete) )
         )
        ((equal templete-type  'constructor)
-        (yas-expand-snippet (ajc-constructor-to-yasnippet-templete yasnippet-templete))
+        (yas/expand-snippet (ajc-constructor-to-yasnippet-templete yasnippet-templete))
         )))))
 
 
