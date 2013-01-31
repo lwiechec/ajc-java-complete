@@ -136,8 +136,10 @@
   :group 'convenience
   :prefix "auto-java-complete")
 
-(defcustom ajc-tag-file "~/.java_base.tag"
-  "the tag file is  used for java complete ,it  is generate by a Tags.java ,
+; my version: defines a list of tag files to be parsed
+(defcustom ajc-tag-files (remove nil
+				 (list "~/.java_base.tag"))
+  "the tag files are used for java complete ,it  is generate by a Tags.java ,
 so before you use this tool ,try to compile Tags.java
           javac Tags.java
 and  use this class like this
@@ -145,7 +147,8 @@ and  use this class like this
  it will tag all jars in classpath to tag file , or
          java Tags   com.whatever.*
  just tag class under com.whatever packages "
-  :type 'string
+  :type '(choice (string :tag "Single tag file (string)")
+                 (repeat :args (string) :tag "List of tag files (strings)"))
   :group 'auto-java-complete)
 
 
