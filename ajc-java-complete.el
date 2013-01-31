@@ -543,30 +543,33 @@ can be a method item ,or a field item"
 (defun ajc-init()
   "find java tag file and do some initial works, like  populate some variables "
   (unless ajc-is-running
-    (setq ajc-tag-file (file-truename (expand-file-name ajc-tag-file  )))
-    (if (file-exists-p  ajc-tag-file)
-        (with-current-buffer (find-file-noselect ajc-tag-file )
-          ;; a buffer name starts with empth string,means hidden this buffer
-          (rename-buffer " *java-base.tag*")
-          (setq ajc-tag-buffer " *java-base.tag*")
-          (buffer-disable-undo)
-          (setq buffer-read-only t)
-          (fundamental-mode)
-          (setq case-fold-search nil)
-          (setq ajc-package-first-ln  (string-to-number (ajc-read-line 3)))
-          (setq ajc-position-of-package-first-line (progn   (ajc-goto-line  ajc-package-first-ln) (point)) )
-          (setq ajc-class-first-ln    (string-to-number  (ajc-read-line 4)))
-          (setq  ajc-position-of-class-first-line (progn   (ajc-goto-line  ajc-class-first-ln) (point)) )
-          (setq ajc-member-first-ln   (string-to-number (ajc-read-line 5)))
-          (setq  ajc-position-of-member-first-line (progn   (ajc-goto-line  ajc-member-first-ln) (point)) )
-          (setq ajc-member-end-ln     (string-to-number (ajc-read-line 6)))
-          (setq  ajc-position-of-member-end-line (progn   (ajc-goto-line  ajc-member-end-ln) (point)) )
-;;          (ajc-load-all-sorted-class-items-to-memory)
-          (ajc-sort-class)
-          )
-      (message  ( concat ajc-tag-file " doesn't exists !!!")))
+    ;; iterate over set of tag files and read the contents to the 'ajc-tag-buffer'
+    (loop for ajc-tag-file in ajc-tag-files do
+	  (setq ajc-tag-file (file-truename (expand-file-name ajc-tag-file  )))
+	  (if (file-exists-p  ajc-tag-file)
+	      (setq ajc-tag-buffer " *java-base.tag*")
+
+	      (with-current-buffer (find-file-noselect ajc-tag-file )
+		;; a buffer name starts with empty string,means hidden this buffer
+		(rename-buffer " *java-base.tag*" t) ;; read file to a separate buffer
+		(buffer-disable-undo)
+		(setq buffer-read-only t)
+		(fundamental-mode)
+		(setq case-fold-search nil)
+		(setq ajc-package-first-ln  (string-to-number (ajc-read-line 3)))
+		(setq ajc-position-of-package-first-line (progn   (ajc-goto-line  ajc-package-first-ln) (point)) )
+		(setq ajc-class-first-ln    (string-to-number  (ajc-read-line 4)))
+		(setq  ajc-position-of-class-first-line (progn   (ajc-goto-line  ajc-class-first-ln) (point)) )
+		(setq ajc-member-first-ln   (string-to-number (ajc-read-line 5)))
+		(setq  ajc-position-of-member-first-line (progn   (ajc-goto-line  ajc-member-first-ln) (point)) )
+		(setq ajc-member-end-ln     (string-to-number (ajc-read-line 6)))
+		(setq  ajc-position-of-member-end-line (progn   (ajc-goto-line  ajc-member-end-ln) (point)) )
+		;;          (ajc-load-all-sorted-class-items-to-memory)
+		(ajc-sort-class)
+		)
+	    (message  ( concat ajc-tag-file " doesn't exists !!!")))
     (setq ajc-is-running t)
-    ))
+)))
 ;;;###autoload
 (defun ajc-reload()
   "restart Auto Java Complete ,when your tag file changed,
